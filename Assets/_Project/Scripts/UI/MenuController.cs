@@ -19,29 +19,21 @@ namespace _Project.Scripts.UI
         {
             FillDropDownMenu();
             AddListeners();
+            _cardLoadController.BusyChanged += OnBusyChanged;
         }
 
+        private void OnBusyChanged(bool value)
+        {
+            _buttonLoad.interactable = !value;
+            _dropdownMenu.interactable = !value;
+            _buttonCancel.interactable = value;
+        }
+        
         private void AddListeners()
         {
             _buttonLoad.onClick.AddListener(_cardLoadController.Load);
             _buttonCancel.onClick.AddListener(_cardLoadController.Cancel);
             _dropdownMenu.onValueChanged.AddListener(_cardLoadController.ChangeLoadType);
-        }
-
-        public void Update()
-        {
-            if (_cardLoadController.IsBusy)
-            {
-                _buttonLoad.interactable = false;
-                _dropdownMenu.interactable = false;
-                _buttonCancel.interactable = true;
-            }
-            else
-            {
-                _buttonLoad.interactable = true;
-                _dropdownMenu.interactable = true;
-                _buttonCancel.interactable = false;
-            }
         }
 
         private void FillDropDownMenu()

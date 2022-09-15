@@ -9,8 +9,9 @@ namespace _Project.Scripts.CardLoader
     public class CardLoadController : MonoBehaviour
     {
         [SerializeField] private CardHolder _cardHolder;
-        public bool IsBusy => _cardLoadHandler is { IsBusy: true };
-        private ICardLoadHandler _cardLoadHandler;
+        public bool IsBusy => CardLoadHandler is { IsBusy: true };
+        public Action<bool> BusyChanged { get; set; }
+        private ICardLoadHandler CardLoadHandler { get; set; }
         private ICardLoadHandler GetLoaderByType(CardLoadType type)
         {
             return type switch
@@ -21,10 +22,17 @@ namespace _Project.Scripts.CardLoader
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }
+
+        private void Awake()
+        {
+            ChangeLoadType(CardLoadType.AllAtOnce);
+        }
+
         [Button]
         public void ChangeLoadType(CardLoadType type)
         {
-            _cardLoadHandler = GetLoaderByType(type);
+            CardLoadHandler = GetLoaderByType(type);
+            CardLoadHandler.BusyChanged += BusyChanged;
         }
 
         public void ChangeLoadType(int index)
@@ -35,15 +43,15 @@ namespace _Project.Scripts.CardLoader
         [Button]
         public void Load()
         {
-            if (_cardLoadHandler == null) ChangeLoadType(CardLoadType.AllAtOnce);
+            if (CardLoadHandler == null) ChangeLoadType(CardLoadType.AllAtOnce);
             _cardHolder.ResetCards();
-            _cardLoadHandler.Load();
+            CardLoadHandler.Load();
         }
     
         [Button]
         public void Cancel()
         {
-            _cardLoadHandler?.Cancel();
+            CardLoadHandler?.Cancel();
             _cardHolder.ResetCards();
         }
     

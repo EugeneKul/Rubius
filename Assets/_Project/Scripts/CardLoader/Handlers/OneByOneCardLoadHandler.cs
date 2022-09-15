@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using _Project.Scripts.ImageLoadServices;
 
 namespace _Project.Scripts.CardLoader.Handlers
@@ -7,7 +8,19 @@ namespace _Project.Scripts.CardLoader.Handlers
     {
         public IImageLoadService ImageLoadService { get; private set; }
         public CardHolder CardHolder { get; private set; }
-        public bool IsBusy { get; private set; }
+        private bool _isBusy;
+
+        public bool IsBusy
+        {
+            get => _isBusy;
+            private set
+            {
+                if (_isBusy == value) return;
+                _isBusy = value;
+                BusyChanged?.Invoke(value);
+            }
+        }
+        public Action<bool> BusyChanged { get; set; }
 
         private CancellationTokenSource _currentTaskToken;
         
@@ -35,8 +48,7 @@ namespace _Project.Scripts.CardLoader.Handlers
                 if (_currentTaskToken.IsCancellationRequested) return;
                 var task = service.AsyncLoadRandomImage(240,320,_currentTaskToken);
                 await task;
-                card.SetTexture(task.Result);
-                card.Open();
+                card.LoadImage(task.Result);
             }
 
             IsBusy = false;

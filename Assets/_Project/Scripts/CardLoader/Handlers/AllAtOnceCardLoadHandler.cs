@@ -10,7 +10,19 @@ namespace _Project.Scripts.CardLoader.Handlers
     {
         public IImageLoadService ImageLoadService { get; private set; }
         public CardHolder CardHolder { get; private set; }
-        public bool IsBusy { get; private set; }
+        private bool _isBusy;
+
+        public bool IsBusy
+        {
+            get => _isBusy;
+            private set
+            {
+                if (_isBusy == value) return;
+                _isBusy = value;
+                BusyChanged?.Invoke(value);
+            }
+        }
+        public Action<bool> BusyChanged { get; set; }
 
         private CancellationTokenSource _currentTaskToken;
         
@@ -39,15 +51,11 @@ namespace _Project.Scripts.CardLoader.Handlers
 
             await Task.WhenAll(tasks.ToArray());
 
-            EmptyCard card;
-
             if (_currentTaskToken.IsCancellationRequested) return;
             
             for (int i = 0; i < CardHolder.Cards.Count; i++)
             {
-                card = CardHolder.Cards[i];
-                card.SetTexture(tasks[i].Result);
-                card.Open();
+                CardHolder.Cards[i].LoadImage(tasks[i].Result);
             }
 
             IsBusy = false;
