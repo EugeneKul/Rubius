@@ -11,14 +11,14 @@ namespace _Project.Scripts.Utility
         {
             UnityWebRequest request = UnityWebRequest.Get(url);
             request.SendWebRequest();
-            while (!request.isDone || cancelTokenSource is { IsCancellationRequested: true })
+            while (!request.isDone && cancelTokenSource is { IsCancellationRequested: false })
             {
                 await Task.Yield();
             }
-
+            
             var response = new ResponseData(request);
 
-            if (response.IsError)
+            if (response.IsError && !cancelTokenSource.IsCancellationRequested)
             {
                 Debug.LogError($"Error While Sending {request.error}");
             }

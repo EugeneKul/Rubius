@@ -54,6 +54,7 @@ namespace _Project.Scripts.CardLoader.Handlers
             while (tasks.Any() && !_currentTaskToken.IsCancellationRequested)
             {
                 var finishedTask = await Task.WhenAny(tasks);
+                if(_currentTaskToken.IsCancellationRequested) return;
                 tasks.Remove(finishedTask);
                 var card = CardHolder.GetRandomClosedCard();
                 card.LoadImage(finishedTask.Result);

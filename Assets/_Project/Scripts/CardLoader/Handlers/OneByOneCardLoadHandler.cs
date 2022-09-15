@@ -45,9 +45,9 @@ namespace _Project.Scripts.CardLoader.Handlers
 
             foreach (var card in CardHolder.Cards)
             {
-                if (_currentTaskToken.IsCancellationRequested) return;
                 var task = service.AsyncLoadRandomImage(240,320,_currentTaskToken);
                 await task;
+                if (_currentTaskToken.IsCancellationRequested) return;
                 card.LoadImage(task.Result);
             }
 

@@ -12,6 +12,7 @@ namespace _Project.Scripts.CardLoader
         public bool IsBusy => CardLoadHandler is { IsBusy: true };
         public Action<bool> BusyChanged { get; set; }
         private ICardLoadHandler CardLoadHandler { get; set; }
+        
         private ICardLoadHandler GetLoaderByType(CardLoadType type)
         {
             return type switch
