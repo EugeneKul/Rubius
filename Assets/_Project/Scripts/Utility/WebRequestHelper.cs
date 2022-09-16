@@ -9,13 +9,14 @@ namespace _Project.Scripts.Utility
     {
         public static async Task<ResponseData> AsyncGetRequest(string url, CancellationTokenSource cancelTokenSource)
         {
-            UnityWebRequest request = UnityWebRequest.Get(url);
+            using UnityWebRequest request = UnityWebRequest.Get(url);
+
             request.SendWebRequest();
             while (!request.isDone && cancelTokenSource is { IsCancellationRequested: false })
             {
                 await Task.Yield();
             }
-            
+
             var response = new ResponseData(request);
 
             if (response.IsError && !cancelTokenSource.IsCancellationRequested)

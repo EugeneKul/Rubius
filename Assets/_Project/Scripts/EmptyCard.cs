@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,30 +12,40 @@ namespace _Project.Scripts
         [SerializeField] private RectTransform _frontImage;
         [SerializeField] private RectTransform _backImage;
         [SerializeField] private float _animTime = 0.2f;
-
+        
         public bool IsOpen { get; private set; }
 
         private Sequence _currentSequence;
 
+        private void Awake()
+        {
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            SetTexture(new Texture2D(2,2));
+        }
+        
         private void SetTexture(Texture2D texture)
         {
             _rawImage.texture = texture;
         }
 
-        private void SetTexture(byte[] bytes)
-        {
-            Texture2D tex = new Texture2D(240, 320);
-            tex.LoadImage(bytes);
-            tex.Apply();
-            SetTexture(tex);
-        }
-
         public void LoadImage(byte[] bytes)
         {
-            SetTexture(bytes);
+            Texture2D tex = (Texture2D)_rawImage.texture;
+            tex.LoadImage(bytes);
+            tex.Apply();
+            
             Open();
         }
-        
+
+        private void OnDestroy()
+        {
+            Destroy(_rawImage.texture);
+        }
+
         [Button]
         private void Open()
         {

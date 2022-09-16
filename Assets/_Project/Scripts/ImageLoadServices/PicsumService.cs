@@ -6,11 +6,11 @@ namespace _Project.Scripts.ImageLoadServices
 {
     public class PicsumService : IImageLoadService
     {
-        public async Task<byte[]> AsyncLoadRandomImage(int width, int height,CancellationTokenSource cancelTokenSource)
+        public async Task<byte[]> AsyncLoadRandomImage(int width, int height, CancellationTokenSource cancelTokenSource)
         {
-            var task =  WebRequestHelper.AsyncGetRequest($"https://picsum.photos/{width}/{height}",cancelTokenSource);
+            var task = WebRequestHelper.AsyncGetRequest($"https://picsum.photos/{width}/{height}", cancelTokenSource);
             await task;
-            return task.Result.DownloadHandler.data;
+            return task.Result.Data;
         }
     }
 }
